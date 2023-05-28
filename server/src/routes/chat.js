@@ -13,7 +13,10 @@ const router = Router();
 router.post("/new", async (req, res) => {
     // check if puid is already in db
     console.log(req.body);
-    let user_puid = await User.find({ plat: req.body.plat, puid: req.body.puid });
+    let user_puid = await User.find({
+        plat: req.body.plat,
+        puid: req.body.puid,
+    });
     if (user_puid.length !== 0) {
         res.status(409).json({ error: "uid exists" });
         return;
@@ -27,7 +30,11 @@ router.post("/new", async (req, res) => {
     }
 
     // store user info in db
-    await User.create({ plat: req.body.plat, puid: req.body.puid, uid: req.body.uid });
+    await User.create({
+        plat: req.body.plat,
+        puid: req.body.puid,
+        uid: req.body.uid,
+    });
     res.status(200).send("OK");
 });
 
@@ -40,7 +47,9 @@ router.post("/chat", async (req, res) => {
     }
     console.log(target_user);
     // check if the channel on platform has been used
-    let chatbox = await Chatbox.find({ $or: [{ pgid1: req.body.gid }, { pgid2: req.body.gid }] });
+    let chatbox = await Chatbox.find({
+        $or: [{ pgid1: req.body.gid }, { pgid2: req.body.gid }],
+    });
     if (chatbox.length !== 0) {
         res.status(409).json({ error: "chatroom has created" });
         return;
@@ -66,21 +75,32 @@ router.post("/chat", async (req, res) => {
 });
 
 router.post("/send", async (req, res) => {
-    console.log(req.body)
+    console.log(req.body);
     // find the chatbox by pgid
-    let chatbox = await Chatbox.findOne({ $or: [{ pgid1: req.body.gid }, { pgid2: req.body.gid }] });
+    let chatbox = await Chatbox.findOne({
+        $or: [{ pgid1: req.body.gid }, { pgid2: req.body.gid }],
+    });
     if (!chatbox) {
         res.status(404).json({ error: "chatroom not found" });
         return;
     }
 
-    let target_pgid = (chatbox.pgid1 === req.body.gid.toString()) ? chatbox.pgid2 : chatbox.pgid1;
-    let target_plat = (chatbox.pgid1 === req.body.gid.toString()) ? chatbox.plat2 : chatbox.plat1;
+    let target_pgid =
+        chatbox.pgid1 === req.body.gid.toString()
+            ? chatbox.pgid2
+            : chatbox.pgid1;
+    let target_plat =
+        chatbox.pgid1 === req.body.gid.toString()
+            ? chatbox.plat2
+            : chatbox.plat1;
 
-    console.log({target_pgid: target_pgid,target_plat: target_plat})
+    console.log({ target_pgid: target_pgid, target_plat: target_plat });
     // send message and gid to target platform bot
     await axios
-        .post(url[target_plat] + "/send", { gid: target_pgid, msg: req.body.msg })
+        .post(url[target_plat] + "/send", {
+            gid: target_pgid,
+            msg: req.body.msg,
+        })
         .then(() => {
             res.status(200).send("OK");
         })
