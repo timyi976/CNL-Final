@@ -4,7 +4,7 @@ import dotenv from "dotenv-defaults";
 const connect = () => {
     dotenv.config();
     mongoose
-        .connect(process.env.MONGO_URL, {
+        .connect(process.env.MONGO_URL || "mongodb://localhost:27017/cnl-final", {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         })

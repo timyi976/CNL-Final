@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { User, Chatbox } from "../models/Chat";
+import { getReply } from "./gpt";
 import axios from "axios";
 
 let url = {
@@ -77,7 +78,7 @@ router.post("/send", async (req, res) => {
 
     // send message and gid to target platform bot
     await axios
-        .post(url[target_plat] + "/send", { gid: target_pgid, message: req.body.message })
+        .post(url[target_plat] + "/send", { gid: target_pgid, msg: req.body.msg })
         .then(() => {
             res.status(200).send("OK");
         })
@@ -88,9 +89,25 @@ router.post("/send", async (req, res) => {
 });
 
 router.post("/reply", async (req, res) => {
-    // let llm_res = llm_query(req)
-    let llm_res = "hasn't implemented";
-    res.status(200).json({ message: llm_res });
+    try {
+        const prompt = `List three replies, no other words, no number, use newline to separate:\n${req.body.msg}`;
+        let llm_res = await getReply(prompt);
+        res.status(200).json({ msg: llm_res });
+    } catch (err) {
+        console.log(err.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+router.post("/translate", async (req, res) => {
+    try {
+        const prompt = `Translate to zh-TW:\n${req.body.msg}`;
+        let llm_res = await getReply(prompt);
+        res.status(200).json({ msg: llm_res });
+    } catch (err) {
+        console.log(err.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
 });
 
 export default router;
