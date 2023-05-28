@@ -1,7 +1,7 @@
 {
     "command_prefix": "/",
-    "token": "your-discord-bot-token",
+    "token": "your token",
     "default_ext": ["general", "cross_out", "cross_in"],
     "listen_port": 8765,
-    "server_url": "http://localhost:9876"
+    "server_url": "http://localhost:4000"
 }

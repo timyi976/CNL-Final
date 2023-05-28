@@ -16,7 +16,7 @@ class CrossPlatOut(commands.Cog):
 
         body = dict()
         body["plat"] = "discord"
-        body["puid"] = ctx.guild.id
+        body["puid"] = str(ctx.guild.id)
         body["uid"] = username
 
         # set guild
@@ -52,7 +52,7 @@ class CrossPlatOut(commands.Cog):
             # send post request to bot.config["server_url"] + "/chat"
             body = dict()
             body["plat"] = "discord"
-            body["gid"] = channel_id
+            body["gid"] = str(channel_id)
             body["uid"] = target_uid
 
             url = self.bot.config["server_url"] + "/chat"
@@ -75,7 +75,7 @@ class CrossPlatOut(commands.Cog):
         
         body = dict()
         body["plat"] = "discord"
-        body["gid"] = message.channel.id
+        body["gid"] = str(message.channel.id)
         body["msg"] = message.content
 
         # send post request to bot.config["server_url"] + "/send"
@@ -119,7 +119,7 @@ class CrossPlatOut(commands.Cog):
 
                 body = dict()
                 body["plat"] = "discord"
-                body["gid"] = ctx.channel.id
+                body["gid"] = str(ctx.channel.id)
                 body["msg"] = chosen
 
                 # send post request to bot.config["server_url"] + "/send"

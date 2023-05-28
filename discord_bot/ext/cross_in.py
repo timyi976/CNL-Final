@@ -12,14 +12,14 @@ class CrossPlatIn(commands.Cog):
             # body of request if a json
             body = await request.json()
             uid = body['puid']
-            guild = self.bot.get_guild(int(uid))
+            guild = await self.bot.fetch_guild(int(uid))
             # create channel
             channel_name = self.random_str()
             await self.create_channel(guild, channel_name)
             channel_id = await self.get_channel_id(guild, channel_name)
 
             reply_body = dict()
-            reply_body['gid'] = channel_id
+            reply_body['gid'] = str(channel_id)
             return web.json_response(reply_body)
         
         async def post_send_handler(request):

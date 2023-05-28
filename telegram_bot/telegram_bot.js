@@ -14,7 +14,7 @@ var last_receive_message = "";
 
 const http_server = express();
 const port_rec = 7000;
-const port_send = 6000;
+const port_send = 4000;
 
 bot.on('message', (msg) => {
     
