@@ -6,6 +6,7 @@ Following Python3 packages required!
 ```
 aiohttp
 discord.py
+requests
 ```
 
 ## Config
