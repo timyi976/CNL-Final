@@ -34,7 +34,7 @@ class CrossPlatIn(commands.Cog):
             msg = "🗨 " + msg
 
             # guild_id, channel_id = utils.split_id(gid)
-            channel = self.bot.get_channel(gid)
+            channel = await self.bot.fetch_channel(gid)
             await channel.send(msg)
             self.bot.previous_msg = msg
             return web.Response()
@@ -44,7 +44,7 @@ class CrossPlatIn(commands.Cog):
         app.add_routes([web.post('/create', post_create_handler), web.post('/send', post_send_handler)])
         runner = web.AppRunner(app)
         await runner.setup()
-        site = web.TCPSite(runner, 'localhost', 8765)
+        site = web.TCPSite(runner, 'localhost', int(self.bot.config["listen_port"]))
         await self.bot.wait_until_ready()
         await site.start()
 
