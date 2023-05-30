@@ -3,7 +3,7 @@ const emojiMap = require('emoji-unicode-map');
 const express = require('express');
 const http = require('http');
 
-var token = '6011890513:AAGG5yMQ1Gjm3J083A_KVAxwOBW-qmBQ6AI'; //Bot name CNL_Telegram_bot
+var token = '5873224023:AAGT2wzD6T0XEnbAWdAT8KzwDJfPRVLb9NI'; //Bot name CNL_Telegram_bot
 
 var bot = new TelegramBot(token, {polling: true});
 
@@ -353,6 +353,66 @@ function handleCommand(command, parameters, chatId) {
             postRequest.write(postData);
             postRequest.end();
             
+            break;
+        case 'translate':
+            
+            console.log("translate");
+            const message_trans= last_receive_message;
+        
+
+            //get msg from
+            // Send a POST request with JSON data
+            const postData_trans = JSON.stringify({
+                msg: message_trans 
+            });
+            
+            const options_trans = {
+                hostname: 'localhost',
+                port: port_send,
+                path: '/translate',
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json',
+                'Content-Length': postData_trans.length
+                }
+            };
+            
+            const postRequest_trans = http.request(options_trans, (res) => {
+
+                let data = '';
+                res.on('data', (chunk) => {
+                    data += chunk;
+                });
+                
+                res.on('end', () => {
+                    try {
+                    
+                        const responseData = JSON.parse(data).msg; // Parse the JSON response
+                        if (typeof responseData === 'string') {
+                            const response = `The ChatGPT translated message is:\n\n${responseData}`;
+                            // Send the translated message to the user
+                            bot.sendMessage(chatId, response);
+                        } else {
+                            console.log('Invalid response data. Expected a string.');
+                        }
+                    } catch (error) {
+                        console.log('Error parsing the response data:', error);
+                    }
+                });
+            });
+
+            postRequest_trans.on('error', (error) => {
+                var resp = command + ": ERROR";
+                console.log("Send "+ resp + " to the user.");
+                bot.sendMessage(chatId, resp); //發送訊息的function
+                
+                console.error('Error making POST request:', error);
+            });
+            
+            postRequest_trans.write(postData_trans);
+            postRequest_trans.end();
+            var resp = command + ": OK";
+            console.log(resp);
             break;
         default:
             // Handle other commands
