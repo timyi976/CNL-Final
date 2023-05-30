@@ -87,7 +87,7 @@ class CrossPlatOut(commands.Cog):
     @commands.command()
     async def reply(self, ctx):
         if self.bot.prev_msg.get(ctx.channel.id) is None:
-            await ctx.send("[Bot] 😢 No previous message!")
+            await ctx.reply("[Bot] 😢 No previous message!")
             return
         
         # send post request to bot.config["server_url"] + "/recv"
@@ -98,12 +98,12 @@ class CrossPlatOut(commands.Cog):
         r = requests.post(self.bot.config["server_url"] + "/reply", json=body)
 
         if r.status_code != 200:
-            await ctx.send(f"[Bot] 😢 [/reply] Something went wrong!")
+            await ctx.reply(f"[Bot] 😢 [/reply] Something went wrong!")
         else:
             replies = r.json()["msg"]
             assert type(replies) == list
             msg = self.arrange_suggest_reply(replies, prev_msg)
-            sent = await ctx.send(msg)
+            sent = await ctx.reply(msg)
             # react
             for i in range(len(replies)+1):
                 await sent.add_reaction(self.emojis[i])
@@ -113,7 +113,7 @@ class CrossPlatOut(commands.Cog):
             reaction, user = await self.bot.wait_for('reaction_add', check=check)
 
             if str(reaction.emoji) == self.emojis[0]:
-                await ctx.send("[Bot] 📤 No suggested replies sent!")
+                await ctx.reply("[Bot] 📤 No suggested replies sent!")
             else:
                 chosen = replies[self.emojis.index(str(reaction.emoji))-1]
 
@@ -125,7 +125,28 @@ class CrossPlatOut(commands.Cog):
                 # send post request to bot.config["server_url"] + "/send"
                 r = requests.post(self.bot.config["server_url"] + "/send", json=body)
 
-                await ctx.send(f"[Bot] 📤 Suggested reply sent: {str(reaction.emoji)} {chosen} !")
+                await ctx.reply(f"[Bot] 📤 Suggested reply sent: {str(reaction.emoji)} {chosen} !")
+
+    @commands.command()
+    async def translate(self, ctx):
+        if self.bot.prev_msg.get(ctx.channel.id) is None:
+            await ctx.reply("[Bot] 😢 No previous message!")
+            return
+        
+        # send post request to bot.config["server_url"] + "/recv"
+        body = dict()
+        prev_msg = self.bot.prev_msg[ctx.channel.id]
+        body["msg"] = prev_msg
+
+        r = requests.post(self.bot.config["server_url"] + "/translate", json=body)
+
+        if r.status_code != 200:
+            await ctx.reply(f"[Bot] 😢 [/translate] Something went wrong!")
+        else:
+            replies = r.json()["msg"]
+            # assert type(replies) == str
+            msg = self.arrange_translation(replies, prev_msg)
+            sent = await ctx.reply(msg)
 
     async def create_channel(self, ctx, channel_name):
         guild = ctx.guild
@@ -151,7 +172,11 @@ class CrossPlatOut(commands.Cog):
         msg += f"\t{self.emojis[0]} Reject!\n"
         msg += "❗ Note: You must react to one of the above choices!"
         return msg
-
+    
+    def arrange_translation(self, reply, prev_msg):
+        msg = f'[Bot] 🌏 Following is the translation of "{prev_msg}" by chatGPT:\n'
+        msg += f"\t{reply}"
+        return msg
 
 async def setup(bot):
     await bot.add_cog(CrossPlatOut(bot))
