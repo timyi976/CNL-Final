@@ -249,7 +249,7 @@ function handleCommand(command, parameters, chatId) {
             
                 res.on('end', () => {
                     try {
-                        const responseData = JSON.parse(data); // Parse the JSON response
+                        const responseData = JSON.parse(data).msg; // Parse the JSON response
                         if (Array.isArray(responseData)) {
                             let response = 'The ChatGPT suggested messages are:\n\n';
                 
