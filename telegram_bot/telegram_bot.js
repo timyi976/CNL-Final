@@ -3,7 +3,7 @@ const emojiMap = require('emoji-unicode-map');
 const express = require('express');
 const http = require('http');
 
-var token = '5873224023:AAGT2wzD6T0XEnbAWdAT8KzwDJfPRVLb9NI'; //Bot name CNL_Telegram_bot
+var token = '6011890513:AAGG5yMQ1Gjm3J083A_KVAxwOBW-qmBQ6AI'; //Bot name CNL_Telegram_bot
 
 var bot = new TelegramBot(token, {polling: true});
 
